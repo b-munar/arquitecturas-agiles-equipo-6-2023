@@ -1,12 +1,31 @@
-http://localhost:15672
-default_user: guest
-default_pass: guest
+## Disponibilidad del servicio de carga de fotos
 
+Para levantar los servicios es necesario tener docker-compose descargado y ejecutar los siguientes comandos:
 
-http://localhost/
+- docker-compose build
+
+- docker-compose up -d
+
+Para enviar peticiones de carga de imágenes, se debe enviar peticiones POST a la siguiente dirección:
+
+- http://localhost/
+
+El Body de la petición debe ser el siguiente, donde <ruta_imagen> es la ruta donde se encuentra la imagen a subir:
+
 {
-  "path": "/photos/cabra.jpg"
+  "path": <ruta_imagen>
 }
 
-docker-compose build
-docker-compose up -d
+Para monitorear el estado de la cola de mensajería en el ambiente local, puede acceder a la siguiente dirección:
+
+- http://localhost:15672
+
+Y acceder con las siguientes credenciales:
+
+- default_user: guest
+- default_pass: guest
+
+
+
+
+
