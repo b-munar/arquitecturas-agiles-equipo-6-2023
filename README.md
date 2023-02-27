@@ -20,6 +20,13 @@ El Body de la petición debe ser el siguiente, donde <ruta_imagen> es la ruta do
 }
 ```
 
+La imagen debe de encontrarse en la carpeta photos, por ejemplo:
+```json 
+{
+  "path": "/photos/cabra.jpg"
+}
+```
+
 🔍 Para monitorear el estado de la cola de mensajería en el ambiente local, puede acceder a la siguiente dirección:
 
 > http://localhost:15672
