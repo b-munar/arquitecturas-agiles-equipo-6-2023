@@ -8,7 +8,7 @@ docker-compose up -d
 ```
 
 ```bash
-docker exec -it arquitecturas-agiles-equipo-6-2023_app_server_1 bash
+docker exec -it entregaSemana8_app_server_1 bash
 flask db init
 flask db migrate
 flask db upgrade
