@@ -1,0 +1,90 @@
+version: '3.9'
+
+services:
+  postgres:
+    image: postgres:15.0-bullseye
+    environment:
+      POSTGRES_DB: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - '5432:5432'
+    volumes:
+      - data:/var/lib/postgresql/data
+    deploy:  
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 500M
+    
+  rabbitmq:
+    image: 'rabbitmq:3.11.9-management-alpine'
+    ports:
+      - '5672:5672'
+      - '15672:15672'
+      - '15692:15692'
+    healthcheck:
+      test: rabbitmq-diagnostics -q ping
+      interval: 3s
+      timeout: 10s
+      retries: 3
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 110M
+  
+  worker:
+    build: worker
+    volumes:
+      - ./worker:/worker
+      - ./photos:/photos
+    restart: on-failure
+    deploy:
+      resources:
+        limits:
+          cpus: '0.03'
+          memory: 50M
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      postgres:
+        condition: service_started
+
+  app_server:
+    build: app_server
+    volumes:
+      - ./app_server:/app_server
+    ports:
+      - 5000-5002:5000
+      - 4000-4002:4000
+    deploy:
+      resources:
+        limits:
+          cpus: '0.2'
+          memory: 100M
+      mode: replicated
+      replicas: 3
+    environment:
+      FLASK_DEBUG: "on"
+    depends_on:
+      rabbitmq:
+        condition: service_started
+      postgres:
+        condition: service_started
+  
+  nginx:
+    build: nginx
+    ports:
+      - 80:80
+    depends_on:
+      app_server:
+        condition: service_started
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 50M
+
+volumes:
+  data:
