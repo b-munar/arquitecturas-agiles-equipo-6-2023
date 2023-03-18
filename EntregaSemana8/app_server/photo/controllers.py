@@ -1,6 +1,7 @@
 from flask_restful import reqparse, Resource
 from photo.models import Photo
 from authorizer import authenticate
+from user.models import TypeUser
 import pika
 import json
 
@@ -13,6 +14,8 @@ class UploadPhoto(Resource):
     def __init__(self):
         self.argument = parser_upload_photo.parse_args()
     def post(self, **kwargs):
+        if not kwargs["user"].type_user == TypeUser.operator : 
+            return "El usuario autenticado no tiene acceso a este servicio", 403
         args = {
             "path": self.argument["path"],
             "user_id": kwargs["user"].id
